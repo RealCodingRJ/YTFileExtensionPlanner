@@ -6,6 +6,7 @@ class WebsitesOpener(name: String, data: String) {
 
     var siteName: String = ""
     var webData: String = ""
+
     init {
         siteName = name
         webData = data
@@ -19,8 +20,23 @@ class WebsitesOpener(name: String, data: String) {
     fun readFileBase() {
         val readURL = File(getWebURLByName()).readLines()
 
-        readURL.forEach { e ->
-            Desktop.getDesktop().browse(URI.create(e))
+        SongsPlayed(readURL.toString(), webData).PrintSongToFile("url.url")
+
+        readURL.forEachIndexed { index, e ->
+
+            if (e[index].code.toString().startsWith("0: ")) {
+
+                Desktop.getDesktop().browse(URI.create(index.toString() + 1))
+
+            } else if ((e[index].code.toString().startsWith("1: "))) {
+
+                Desktop.getDesktop().browse(URI.create(index.toString() + 2))
+
+            } else {
+
+                Desktop.getDesktop().browse(URI.create(e))
+
+            }
         }
     }
 }
