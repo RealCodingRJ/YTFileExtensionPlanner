@@ -1,9 +1,30 @@
 import java.awt.Desktop
 import java.io.File
 import java.net.URI
+import kotlinx.coroutines.*
+import kotlin.time.Duration.Companion.milliseconds
 
-fun main() {
+suspend fun greetPerson() = withContext(Dispatchers.Default){
+
+    val page1 = this.async {
+        delay(4.milliseconds)
+    }
+
+    println("Welcome: User")
+    page1.await()
+
+}
+
+suspend fun printMessageToUser() {
+    greetPerson()
+}
+
+suspend fun main() {
+
+    printMessageToUser()
+
     val userCommand = CommandCreationUser()
+
     try {
 
         println("Do You Want to Save the URL To a File: ")
@@ -26,7 +47,9 @@ fun main() {
         val webURL = WebsiteURL(url)
         val fileData = FileOpener()
         fileData.createURL(url)
-        Desktop.getDesktop().browse(URI.create(url))
+        withContext(Dispatchers.IO) {
+            Desktop.getDesktop().browse(URI.create(url))
+        }
 
         if (url.isEmpty()) {
             userCommand.printValues("Y | N For Opening Website By File: ")
@@ -36,10 +59,12 @@ fun main() {
                 val urlId = fileData.createURL(webURL.getURL())
                 val opener = WebsitesOpener("url.url", urlId)
 
-                opener.readFileBase()
+                val userChannelStart = readln()
+                if (userChannelStart.contains(urlId[0])) {
 
+                    opener.readFileBase()
+                }
 
-                println("You Have Visit")
             }
         }
     } catch(e: Exception) {
